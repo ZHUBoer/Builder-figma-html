@@ -1,7 +1,7 @@
-import { LayerNode, WithRef } from "../types/nodes";
-import { Dimensions, Direction } from "./dimensions";
-import { traverse } from "./nodes";
-import { getRgb, parseBoxShadowStr, parseUnits } from "./parsers";
+import { LayerNode, WithRef } from '../types/nodes';
+import { Dimensions, Direction } from './dimensions';
+import { traverse } from './nodes';
+import { getRgb, parseBoxShadowStr, parseUnits } from './parsers';
 
 function setData(
   node: LayerNode & { data?: { [index: string]: string } },
@@ -15,17 +15,17 @@ function setData(
 }
 
 const list: (keyof React.CSSProperties)[] = [
-  "opacity",
-  "backgroundColor",
-  "border",
-  "borderTop",
-  "borderLeft",
-  "borderRight",
-  "borderBottom",
-  "borderRadius",
-  "backgroundImage",
-  "borderColor",
-  "boxShadow",
+  'opacity',
+  'backgroundColor',
+  'border',
+  'borderTop',
+  'borderLeft',
+  'borderRight',
+  'borderBottom',
+  'borderRadius',
+  'backgroundImage',
+  'borderColor',
+  'boxShadow',
 ];
 
 export function getAppliedComputedStyles(
@@ -41,34 +41,34 @@ export function getAppliedComputedStyles(
   const color = styles.color;
 
   const defaults: any = {
-    transform: "none",
-    opacity: "1",
-    borderRadius: "0px",
-    backgroundImage: "none",
-    backgroundPosition: "0% 0%",
-    backgroundSize: "auto",
-    backgroundColor: "rgba(0, 0, 0, 0)",
-    backgroundAttachment: "scroll",
-    border: "0px none " + color,
-    borderTop: "0px none " + color,
-    borderBottom: "0px none " + color,
-    borderLeft: "0px none " + color,
-    borderRight: "0px none " + color,
-    borderWidth: "0px",
+    transform: 'none',
+    opacity: '1',
+    borderRadius: '0px',
+    backgroundImage: 'none',
+    backgroundPosition: '0% 0%',
+    backgroundSize: 'auto',
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    backgroundAttachment: 'scroll',
+    border: '0px none ' + color,
+    borderTop: '0px none ' + color,
+    borderBottom: '0px none ' + color,
+    borderLeft: '0px none ' + color,
+    borderRight: '0px none ' + color,
+    borderWidth: '0px',
     borderColor: color,
-    borderStyle: "none",
-    boxShadow: "none",
-    fontWeight: "400",
-    textAlign: "start",
-    justifyContent: "normal",
-    alignItems: "normal",
-    alignSelf: "auto",
-    flexGrow: "0",
-    textDecoration: "none solid " + color,
-    lineHeight: "normal",
-    letterSpacing: "normal",
-    backgroundRepeat: "repeat",
-    zIndex: "auto", // TODO
+    borderStyle: 'none',
+    boxShadow: 'none',
+    fontWeight: '400',
+    textAlign: 'start',
+    justifyContent: 'normal',
+    alignItems: 'normal',
+    alignSelf: 'auto',
+    flexGrow: '0',
+    textDecoration: 'none solid ' + color,
+    lineHeight: 'normal',
+    letterSpacing: 'normal',
+    backgroundRepeat: 'repeat',
+    zIndex: 'auto', // TODO
   };
 
   function pick<T extends { [key: string]: V }, V = any>(
@@ -92,10 +92,10 @@ export function getAppliedComputedStyles(
 export function addConstraints(layers: LayerNode[]) {
   layers.forEach((layer) => {
     traverse(layer, (child) => {
-      if (child.type === "SVG") {
+      if (child.type === 'SVG') {
         child.constraints = {
-          horizontal: "CENTER",
-          vertical: "MIN",
+          horizontal: 'CENTER',
+          vertical: 'MIN',
         };
       } else {
         const ref = child.ref;
@@ -104,94 +104,94 @@ export function addConstraints(layers: LayerNode[]) {
           const parent = el?.parentElement;
           if (el && parent) {
             const currentDisplay = el.style.display;
-            el.style.setProperty("display", "none", "!important");
+            el.style.setProperty('display', 'none', '!important');
             let computed = getComputedStyle(el);
-            const hasFixedWidth = computed?.width.trim().endsWith("px");
-            const hasFixedHeight = computed?.height.trim().endsWith("px");
+            const hasFixedWidth = computed?.width.trim().endsWith('px');
+            const hasFixedHeight = computed?.height.trim().endsWith('px');
             el.style.display = currentDisplay;
             const parentStyle = getComputedStyle(parent);
-            let hasAutoMarginLeft = computed.marginLeft === "auto";
-            let hasAutoMarginRight = computed.marginRight === "auto";
-            let hasAutoMarginTop = computed.marginTop === "auto";
-            let hasAutoMarginBottom = computed.marginBottom === "auto";
+            let hasAutoMarginLeft = computed.marginLeft === 'auto';
+            let hasAutoMarginRight = computed.marginRight === 'auto';
+            let hasAutoMarginTop = computed.marginTop === 'auto';
+            let hasAutoMarginBottom = computed.marginBottom === 'auto';
 
             computed = getComputedStyle(el);
 
-            if (["absolute", "fixed"].includes(computed.position!)) {
-              setData(child, "position", computed.position!);
+            if (['absolute', 'fixed'].includes(computed.position!)) {
+              setData(child, 'position', computed.position!);
             }
 
             if (hasFixedHeight) {
-              setData(child, "heightType", "fixed");
+              setData(child, 'heightType', 'fixed');
             }
             if (hasFixedWidth) {
-              setData(child, "widthType", "fixed");
+              setData(child, 'widthType', 'fixed');
             }
 
             const isInline =
-              computed.display && computed.display.includes("inline");
+              computed.display && computed.display.includes('inline');
 
             if (isInline) {
               const parentTextAlign = parentStyle.textAlign;
-              if (parentTextAlign === "center") {
+              if (parentTextAlign === 'center') {
                 hasAutoMarginLeft = true;
                 hasAutoMarginRight = true;
-              } else if (parentTextAlign === "right") {
+              } else if (parentTextAlign === 'right') {
                 hasAutoMarginLeft = true;
               }
 
-              if (computed.verticalAlign === "middle") {
+              if (computed.verticalAlign === 'middle') {
                 hasAutoMarginTop = true;
                 hasAutoMarginBottom = true;
-              } else if (computed.verticalAlign === "bottom") {
+              } else if (computed.verticalAlign === 'bottom') {
                 hasAutoMarginTop = true;
                 hasAutoMarginBottom = false;
               }
 
-              setData(child, "widthType", "shrink");
+              setData(child, 'widthType', 'shrink');
             }
             const parentJustifyContent =
-              parentStyle.display === "flex" &&
-              ((parentStyle.flexDirection === "row" &&
+              parentStyle.display === 'flex' &&
+              ((parentStyle.flexDirection === 'row' &&
                 parentStyle.justifyContent) ||
-                (parentStyle.flexDirection === "column" &&
+                (parentStyle.flexDirection === 'column' &&
                   parentStyle.alignItems));
 
-            if (parentJustifyContent === "center") {
+            if (parentJustifyContent === 'center') {
               hasAutoMarginLeft = true;
               hasAutoMarginRight = true;
             } else if (
               parentJustifyContent &&
-              (parentJustifyContent.includes("end") ||
-                parentJustifyContent.includes("right"))
+              (parentJustifyContent.includes('end') ||
+                parentJustifyContent.includes('right'))
             ) {
               hasAutoMarginLeft = true;
               hasAutoMarginRight = false;
             }
 
             const parentAlignItems =
-              parentStyle.display === "flex" &&
-              ((parentStyle.flexDirection === "column" &&
+              parentStyle.display === 'flex' &&
+              ((parentStyle.flexDirection === 'column' &&
                 parentStyle.justifyContent) ||
-                (parentStyle.flexDirection === "row" &&
+                (parentStyle.flexDirection === 'row' &&
                   parentStyle.alignItems));
-            if (parentAlignItems === "center") {
+            if (parentAlignItems === 'center') {
               hasAutoMarginTop = true;
               hasAutoMarginBottom = true;
             } else if (
               parentAlignItems &&
-              (parentAlignItems.includes("end") ||
-                parentAlignItems.includes("bottom"))
+              (parentAlignItems.includes('end') ||
+                parentAlignItems.includes('bottom'))
             ) {
               hasAutoMarginTop = true;
               hasAutoMarginBottom = false;
             }
 
-            if (child.type === "TEXT") {
-              if (computed.textAlign === "center") {
+            if (child.type === 'TEXT') {
+              if (computed.textAlign === 'center') {
                 hasAutoMarginLeft = true;
                 hasAutoMarginRight = true;
-              } else if (computed.textAlign === "right") {
+              } else if (computed.textAlign === 'right') {
                 hasAutoMarginLeft = true;
                 hasAutoMarginRight = false;
               }
@@ -200,22 +200,22 @@ export function addConstraints(layers: LayerNode[]) {
             child.constraints = {
               horizontal:
                 hasAutoMarginLeft && hasAutoMarginRight
-                  ? "CENTER"
+                  ? 'CENTER'
                   : hasAutoMarginLeft
-                  ? "MAX"
-                  : "SCALE",
+                  ? 'MAX'
+                  : 'SCALE',
               vertical:
                 hasAutoMarginBottom && hasAutoMarginTop
-                  ? "CENTER"
+                  ? 'CENTER'
                   : hasAutoMarginTop
-                  ? "MAX"
-                  : "MIN",
+                  ? 'MAX'
+                  : 'MIN',
             };
           }
         } else {
           child.constraints = {
-            horizontal: "SCALE",
-            vertical: "MIN",
+            horizontal: 'SCALE',
+            vertical: 'MIN',
           };
         }
       }
@@ -230,10 +230,10 @@ export const getBorderRadii = ({
 }): Partial<
   Pick<
     RectangleNode,
-    | "topLeftRadius"
-    | "topRightRadius"
-    | "bottomLeftRadius"
-    | "bottomRightRadius"
+    | 'topLeftRadius'
+    | 'topRightRadius'
+    | 'bottomLeftRadius'
+    | 'bottomRightRadius'
   >
 > => {
   const topLeft = parseUnits(computedStyle.borderTopLeftRadius);
@@ -261,7 +261,7 @@ const hasBorder = ({
   borderType: string;
   borderColor: string;
 }) =>
-  borderWidth && borderWidth !== "0" && borderType !== "none" && borderColor;
+  borderWidth && borderWidth !== '0' && borderType !== 'none' && borderColor;
 
 export function getStrokesRectangle({
   dir,
@@ -274,7 +274,7 @@ export function getStrokesRectangle({
   computedStyle: CSSStyleDeclaration;
   el: Element;
 }): WithRef<RectangleNode> | undefined {
-  const computed = computedStyle[("border" + capitalize(dir)) as any];
+  const computed = computedStyle[('border' + capitalize(dir)) as any];
   if (computed) {
     const parsed = computed.match(/^([\d\.]+)px\s*(\w+)\s*(.*)$/);
     if (parsed) {
@@ -282,30 +282,30 @@ export function getStrokesRectangle({
       if (hasBorder({ borderWidth, borderType, borderColor })) {
         const rgb = getRgb(borderColor);
         if (rgb) {
-          const width = ["top", "bottom"].includes(dir)
+          const width = ['top', 'bottom'].includes(dir)
             ? rect.width
             : parseFloat(borderWidth);
-          const height = ["left", "right"].includes(dir)
+          const height = ['left', 'right'].includes(dir)
             ? rect.height
             : parseFloat(borderWidth);
           const fill: SolidPaint = {
-            type: "SOLID",
+            type: 'SOLID',
             color: { r: rgb.r, b: rgb.b, g: rgb.g },
             opacity: rgb.a || 1,
           };
           const layer: WithRef<RectangleNode> = {
             ref: el,
-            type: "RECTANGLE",
+            type: 'RECTANGLE',
             x:
-              dir === "left"
+              dir === 'left'
                 ? rect.left - width
-                : dir === "right"
+                : dir === 'right'
                 ? rect.right
                 : rect.left,
             y:
-              dir === "top"
+              dir === 'top'
                 ? rect.top - height
-                : dir === "bottom"
+                : dir === 'bottom'
                 ? rect.bottom
                 : rect.top,
             width,
@@ -326,7 +326,7 @@ export const addStrokesFromBorder = ({
   computedStyle: { border },
 }: {
   computedStyle: CSSStyleDeclaration;
-}): Pick<RectangleNode, "strokes" | "strokeWeight"> | undefined => {
+}): Pick<RectangleNode, 'strokes' | 'strokeWeight'> | undefined => {
   if (border) {
     const parsed = border.match(/^([\d\.]+)px\s*(\w+)\s*(.*)$/);
     if (parsed) {
@@ -337,7 +337,7 @@ export const addStrokesFromBorder = ({
           return {
             strokes: [
               {
-                type: "SOLID",
+                type: 'SOLID',
                 color: { r: rgb.r, b: rgb.b, g: rgb.g },
                 opacity: rgb.a || 1,
               },
@@ -354,16 +354,16 @@ export const getShadowEffects = ({
   computedStyle: { boxShadow },
 }: {
   computedStyle: CSSStyleDeclaration;
-}): ShadowEffect[] | undefined => {
-  if (boxShadow && boxShadow !== "none") {
+}): DropShadowEffect[] | undefined => {
+  if (boxShadow && boxShadow !== 'none') {
     const parsed = parseBoxShadowStr(boxShadow);
     const color = getRgb(parsed.color);
     if (color) {
-      const shadowEffect: ShadowEffect = {
+      const shadowEffect: DropShadowEffect = {
         color,
-        type: "DROP_SHADOW",
+        type: 'DROP_SHADOW',
         radius: parsed.blurRadius,
-        blendMode: "NORMAL",
+        blendMode: 'NORMAL',
         visible: true,
         offset: {
           x: parsed.offsetX,
