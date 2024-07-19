@@ -1,4 +1,4 @@
-import { BuilderElement } from "@builder.io/sdk";
+import { BuilderElement } from '@builder.io/sdk';
 import {
   Button,
   createMuiTheme,
@@ -18,45 +18,47 @@ import {
   Tab,
   Box,
   CircularProgress,
-} from "@material-ui/core";
-import green from "@material-ui/core/colors/green";
-import { HelpOutline } from "@material-ui/icons";
-import SvgIcon from "@material-ui/core/SvgIcon";
-import Favorite from "@material-ui/icons/Favorite";
-import * as fileType from "file-type";
-import { action, computed, observable, when } from "mobx";
-import { observer } from "mobx-react";
-import * as pako from "pako";
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as md5 from "spark-md5";
-import * as traverse from "traverse";
-import { arrayBufferToBase64 } from "../lib/functions/buffer-to-base64";
-import { SafeComponent } from "./classes/safe-component";
-import { settings } from "./constants/settings";
-import { theme as themeVars } from "./constants/theme";
-import { deepClone, fastClone } from "./functions/fast-clone";
-import { transformWebpToPNG } from "./functions/encode-images";
-import { traverseLayers } from "./functions/traverse-layers";
-import "./ui.css";
-import { IntlProvider, FormattedMessage } from "react-intl";
-import { en, ru } from "./localize/i18n";
-import { Loading } from "./components/loading";
-import { CheckListContent } from "./constants/utils";
-import { MobileIcon } from "./components/Icons/MobileIcon";
-import { TabletIcon } from "./components/Icons/TabletIcon";
-import { DesktopIcon } from "./components/Icons/DesktopIcon";
-import * as amplitude from "./functions/track";
-import { v4 as uuid } from "uuid";
-import { AiImport } from "./components/ai-import";
-import { Wand } from "./icons/wand";
-import { useDev } from "./constants/use-dev";
-import { Observable } from "@builder.io/sdk/dist/src/classes/observable.class";
+} from '@material-ui/core';
+import green from '@material-ui/core/colors/green';
+import { HelpOutline } from '@material-ui/icons';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import Favorite from '@material-ui/icons/Favorite';
+import * as fileType from 'file-type';
+import { action, computed, observable, when } from 'mobx';
+import { observer } from 'mobx-react';
+import * as pako from 'pako';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import * as md5 from 'spark-md5';
+import * as traverse from 'traverse';
+import { arrayBufferToBase64 } from '../lib/functions/buffer-to-base64';
+import { SafeComponent } from './classes/safe-component';
+import { settings } from './constants/settings';
+import { theme as themeVars } from './constants/theme';
+import { deepClone, fastClone } from './functions/fast-clone';
+import { transformWebpToPNG } from './functions/encode-images';
+import { traverseLayers } from './functions/traverse-layers';
+import './ui.css';
+import { IntlProvider, FormattedMessage } from 'react-intl';
+import { en, ru } from './localize/i18n';
+import { Loading } from './components/loading';
+import { CheckListContent } from './constants/utils';
+import { MobileIcon } from './components/Icons/MobileIcon';
+import { TabletIcon } from './components/Icons/TabletIcon';
+import { DesktopIcon } from './components/Icons/DesktopIcon';
+import * as amplitude from './functions/track';
+import { v4 as uuid } from 'uuid';
+import { AiImport } from './components/ai-import';
+import { Wand } from './icons/wand';
+import { useDev } from './constants/use-dev';
+import { Observable } from '@builder.io/sdk/dist/src/classes/observable.class';
 
 // https://stackoverflow.com/a/46634877
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
-export const apiHost = useDev ? "http://localhost:4000" : "https://builder.io";
+export const apiHost = useDev ? 'http://localhost:4000' : 'https://builder.io';
+// export const apiHost = 'http://localhost:4000';
+
 amplitude.initialize();
 
 const selectionToBuilder = async (
@@ -67,21 +69,21 @@ const selectionToBuilder = async (
   selection = deepClone(selection);
 
   traverse(selection).forEach(function (item) {
-    if (this.key === "intArr") {
+    if (this.key === 'intArr') {
       this.delete();
     }
   });
 
   const res = await fetch(`${apiHost}/api/v1/figma-to-builder`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "content-type": "application/json",
+      'content-type': 'application/json',
     },
     body: JSON.stringify(
       useGzip
         ? {
             compressedNodes: pako.deflate(JSON.stringify(selection), {
-              to: "string",
+              to: 'string',
             }),
           }
         : {
@@ -90,11 +92,11 @@ const selectionToBuilder = async (
     ),
   }).then((res) => {
     if (!res.ok) {
-      console.error("Figma-to-builder request failed", res);
-      amplitude.track("export error", {
-        message: "Figma-to-builder request failed",
+      console.error('Figma-to-builder request failed', res);
+      amplitude.track('export error', {
+        message: 'Figma-to-builder request failed',
       });
-      throw new Error("Figma-to-builder request failed");
+      throw new Error('Figma-to-builder request failed');
     }
     return res.json();
   });
@@ -130,21 +132,21 @@ const theme = createMuiTheme({
   overrides: {
     MuiButtonBase: {
       root: {
-        boxShadow: "none !important",
+        boxShadow: 'none !important',
       },
     },
     MuiTooltip: {
       tooltip: {
         fontSize: 13,
-        backgroundColor: "rgba(45, 45, 45, 0.95)",
-        padding: "7px 11px",
+        backgroundColor: 'rgba(45, 45, 45, 0.95)',
+        padding: '7px 11px',
       },
     },
   },
   props: {
     MuiButtonBase: {
       style: {
-        boxShadow: "none !important",
+        boxShadow: 'none !important',
       },
       // The properties to apply
       disableRipple: true, // No more ripple, on the whole application 💣!
@@ -154,16 +156,16 @@ const theme = createMuiTheme({
 
 const StyledButton = withStyles({
   root: {
-    fontSize: "12px",
-    padding: "8px",
-    height: "30px",
-    minHeight: "unset",
-    display: "flex",
-    justifyContent: "center",
+    fontSize: '12px',
+    padding: '8px',
+    height: '30px',
+    minHeight: 'unset',
+    display: 'flex',
+    justifyContent: 'center',
   },
 })(MenuItem);
 
-const BASE64_MARKER = ";base64,";
+const BASE64_MARKER = ';base64,';
 function convertDataURIToBinary(dataURI: string) {
   const base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
   const base64 = dataURI.substring(base64Index);
@@ -183,7 +185,7 @@ export function getImageFills(layer: Node) {
     layer.fills
       .filter(
         (item) =>
-          item.type === "IMAGE" && item.visible !== false && item.opacity !== 0
+          item.type === 'IMAGE' && item.visible !== false && item.opacity !== 0
       )
       .sort((a, b) => b.opacity - a.opacity);
   return images;
@@ -195,10 +197,10 @@ export async function processImages(layer: Node) {
   const images = getImageFills(layer);
 
   const convertToSvg = (value: string) => {
-    (layer as any).type = "SVG";
+    (layer as any).type = 'SVG';
     (layer as any).svg = value;
-    if (typeof layer.fills !== "symbol") {
-      layer.fills = layer.fills.filter((item) => item.type !== "IMAGE");
+    if (typeof layer.fills !== 'symbol') {
+      layer.fills = layer.fills.filter((item) => item.type !== 'IMAGE');
     }
   };
   if (!images) {
@@ -218,10 +220,10 @@ export async function processImages(layer: Node) {
         }
 
         const url = image.url;
-        if (url.startsWith("data:")) {
+        if (url.startsWith('data:')) {
           const type = url.split(/[:,;]/)[1];
-          if (type.includes("svg")) {
-            const svgValue = decodeURIComponent(url.split(",")[1]);
+          if (type.includes('svg')) {
+            const svgValue = decodeURIComponent(url.split(',')[1]);
             convertToSvg(svgValue);
             return Promise.resolve();
           } else {
@@ -229,13 +231,13 @@ export async function processImages(layer: Node) {
               image.intArr = convertDataURIToBinary(url);
               delete image.url;
             } else {
-              console.info("Found data url that could not be converted", url);
+              console.info('Found data url that could not be converted', url);
             }
             return;
           }
         }
 
-        const isSvg = url.endsWith(".svg");
+        const isSvg = url.endsWith('.svg');
 
         // Proxy returned content through Builder so we can access cross origin for
         // pulling in photos, etc
@@ -243,14 +245,14 @@ export async function processImages(layer: Node) {
           `${apiHost}/api/v1/proxy-api?url=${encodeURIComponent(url)}`
         );
 
-        const contentType = res.headers.get("content-type");
-        if (isSvg || contentType?.includes("svg")) {
+        const contentType = res.headers.get('content-type');
+        if (isSvg || contentType?.includes('svg')) {
           const text = await res.text();
           convertToSvg(text);
         } else {
           const arrayBuffer = await res.arrayBuffer();
           const type = fileType(arrayBuffer);
-          if (type && (type.ext.includes("svg") || type.mime.includes("svg"))) {
+          if (type && (type.ext.includes('svg') || type.mime.includes('svg'))) {
             convertToSvg(await res.text());
             return;
           } else {
@@ -259,7 +261,7 @@ export async function processImages(layer: Node) {
 
             if (
               type &&
-              (type.ext.includes("webp") || type.mime.includes("image/webp"))
+              (type.ext.includes('webp') || type.mime.includes('image/webp'))
             ) {
               const pngArr = await transformWebpToPNG(intArr);
               image.intArr = pngArr;
@@ -269,7 +271,7 @@ export async function processImages(layer: Node) {
           }
         }
       } catch (err) {
-        console.warn("Could not fetch image", layer, err);
+        console.warn('Could not fetch image', layer, err);
       }
     })
   );
@@ -302,11 +304,11 @@ class App extends SafeComponent {
   @observable lipsum = false;
   @observable loadingGenerate = false;
   @observable clientStorage: ClientStorage | null = null;
-  @observable errorMessage = "";
+  @observable errorMessage = '';
 
   @observable generatingCode = false;
-  @observable urlValue = "https://www.builder.io";
-  @observable width = "1200";
+  @observable urlValue = 'https://www.builder.io';
+  @observable width = '1200';
   @observable online = navigator.onLine;
   @observable useFrames = false;
   @observable inDevMode: boolean = false;
@@ -327,8 +329,8 @@ class App extends SafeComponent {
   @observable showImportInvalidError = false;
   @observable isValidImport: null | boolean = null;
   @observable.ref previewData: any;
-  @observable displayFiddleUrl = "";
-  @observable currentLanguage = "en";
+  @observable displayFiddleUrl = '';
+  @observable currentLanguage = 'en';
   @observable tabIndex = 0;
   @observable showDevModeOption: boolean = false;
   @observable figmaCheckList: {
@@ -336,11 +338,11 @@ class App extends SafeComponent {
   } = {};
   @observable loaderContent: CheckListContent[] = [
     {
-      id: "1a",
+      id: '1a',
       data: {
-        type: "during",
+        type: 'during',
         textContent:
-          "Getting everything ready... This can take a few minutes to complete.",
+          'Getting everything ready... This can take a few minutes to complete.',
       },
     },
   ];
@@ -357,27 +359,27 @@ class App extends SafeComponent {
     const fromCache = hash && this.clientStorage?.imageUrlsByHash?.[hash];
 
     if (fromCache) {
-      console.debug("Used URL from cache", fromCache);
+      console.debug('Used URL from cache', fromCache);
       return fromCache;
     }
     if (!apiKey) {
-      console.warn("Tried to upload image without API key");
+      console.warn('Tried to upload image without API key');
       return null;
     }
 
     return fetch(`${apiHost}/api/v1/upload?apiKey=${apiKey}`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify({
         image: arrayBufferToBase64(intArr),
       }),
       headers: {
-        "content-type": "application/json",
+        'content-type': 'application/json',
       },
     })
       .then((res) => res.json())
       .then((data) => {
         const { url } = data;
-        if (typeof url !== "string") {
+        if (typeof url !== 'string') {
           return null;
         }
         if (this.clientStorage && hash) {
@@ -411,11 +413,11 @@ class App extends SafeComponent {
     parent.postMessage(
       {
         pluginMessage: {
-          type: "setStorage",
+          type: 'setStorage',
           data: fastClone(this.clientStorage),
         },
       },
-      "*"
+      '*'
     );
   }
 
@@ -440,13 +442,13 @@ class App extends SafeComponent {
   @computed get urlValid() {
     function validURL(str: string) {
       var pattern = new RegExp(
-        "^(https?:\\/\\/)?" + // protocol
-          "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-          "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-          "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-          "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-          "(\\#[-a-z\\d_]*)?$",
-        "i"
+        '^(https?:\\/\\/)?' + // protocol
+          '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+          '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+          '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+          '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+          '(\\#[-a-z\\d_]*)?$',
+        'i'
       ); // fragment locator
       return !!pattern.test(str);
     }
@@ -464,7 +466,7 @@ class App extends SafeComponent {
 
   @action
   async getCode(useFiddle = false) {
-    this.displayFiddleUrl = "";
+    this.displayFiddleUrl = '';
     this.showImportInvalidError = false;
     this.showRequestFailedError = false;
     if (!this.lipsum) {
@@ -472,10 +474,10 @@ class App extends SafeComponent {
       parent.postMessage(
         {
           pluginMessage: {
-            type: "getSelectionWithImages",
+            type: 'getSelectionWithImages',
           },
         },
-        "*"
+        '*'
       );
 
       this.generatingCode = true;
@@ -486,7 +488,7 @@ class App extends SafeComponent {
     }
 
     if (!(this.selectionWithImages && this.selectionWithImages[0])) {
-      console.warn("No selection with images");
+      console.warn('No selection with images');
       return;
     }
 
@@ -500,13 +502,13 @@ class App extends SafeComponent {
         this.loadingGenerate = false;
         this.generatingCode = false;
         this.showRequestFailedError = true;
-        amplitude.track("export error");
+        amplitude.track('export error');
         throw err;
       });
     } else {
       const selections = deepClone(this.selectionWithImages);
       traverse(selections).forEach(function () {
-        if (this.key === "intArr") {
+        if (this.key === 'intArr') {
           this.delete();
         }
       });
@@ -524,17 +526,17 @@ class App extends SafeComponent {
               imagesPromises.push(
                 (async () => {
                   const { id } = await fetch(`${apiHost}/api/v1/stage-image`, {
-                    method: "POST",
+                    method: 'POST',
                     body: JSON.stringify({
                       image: arrayBufferToBase64((image as any).intArr),
                     }),
                     headers: {
-                      "content-type": "application/json",
+                      'content-type': 'application/json',
                     },
                   }).then((res) => {
                     if (!res.ok) {
-                      console.error("Image upload failed", res);
-                      throw new Error("Image upload failed");
+                      console.error('Image upload failed', res);
+                      throw new Error('Image upload failed');
                     }
                     return res.json();
                   });
@@ -553,12 +555,12 @@ class App extends SafeComponent {
       this.loadingGenerate = false;
       this.generatingCode = false;
       this.showRequestFailedError = true;
-      amplitude.track("export error");
+      amplitude.track('export error');
       throw err;
     });
 
     traverse(blocks).forEach((item) => {
-      if (item?.["@type"] === "@builder.io/sdk:Element") {
+      if (item?.['@type'] === '@builder.io/sdk:Element') {
         const image = imageMap[item.meta?.figmaLayerId];
         if (image) {
           const url = `https://cdn.builder.io/api/v1/image/assets%2FTEMP%2F${image}`;
@@ -586,21 +588,21 @@ class App extends SafeComponent {
       parent.postMessage(
         {
           pluginMessage: {
-            type: "checkIfCanGetCode",
+            type: 'checkIfCanGetCode',
           },
         },
-        "*"
+        '*'
       );
     }
 
     this.generatingCode = true;
 
-    await when(() => typeof this.isValidImport === "boolean");
+    await when(() => typeof this.isValidImport === 'boolean');
     if (!this.isValidImport) {
       this.generatingCode = false;
       this.isValidImport = null;
       this.showImportInvalidError = true;
-      amplitude.track("import error");
+      amplitude.track('import error');
       return;
     }
     this.isValidImport = null;
@@ -609,17 +611,17 @@ class App extends SafeComponent {
 
     // Always only download in dev mode
     if (useFiddle && !this.inDevMode) {
-      const res = await fetch(apiHost + "/api/v1/fiddle", {
-        method: "POST",
+      const res = await fetch(apiHost + '/api/v1/fiddle', {
+        method: 'POST',
         headers: {
-          "content-type": "application/json",
+          'content-type': 'application/json',
         },
         body: json,
       })
         .then((res) => {
           if (!res.ok) {
-            console.error("Failed to create fiddle", res);
-            throw new Error("Failed to create fiddle");
+            console.error('Failed to create fiddle', res);
+            throw new Error('Failed to create fiddle');
           }
           return res.json();
         })
@@ -627,30 +629,30 @@ class App extends SafeComponent {
           this.generatingCode = false;
           this.selectionWithImages = null;
           this.showRequestFailedError = true;
-          amplitude.track("fiddle creation failed");
+          amplitude.track('fiddle creation failed');
 
           throw err;
         });
       if (res.url) {
-        open(res.url, "_blank");
+        open(res.url, '_blank');
         this.displayFiddleUrl = res.url;
       }
       this.generatingCode = false;
       this.selectionWithImages = null;
 
-      amplitude.incrementUserProps("export_count");
-      amplitude.track("export to builder", {
+      amplitude.incrementUserProps('export_count');
+      amplitude.track('export to builder', {
         url: this.displayFiddleUrl,
-        type: "fiddle",
+        type: 'fiddle',
       });
     } else {
       const blob = new Blob([json], {
-        type: "application/json",
+        type: 'application/json',
       });
 
-      const link = document.createElement("a");
-      link.setAttribute("href", URL.createObjectURL(blob));
-      link.setAttribute("download", "page.builder.json");
+      const link = document.createElement('a');
+      link.setAttribute('href', URL.createObjectURL(blob));
+      link.setAttribute('download', 'page.builder.json');
       document.body.appendChild(link); // Required for FF
 
       link.click();
@@ -658,9 +660,9 @@ class App extends SafeComponent {
 
       this.generatingCode = false;
       this.selectionWithImages = null;
-      amplitude.incrementUserProps("export_count");
-      amplitude.track("export to builder", {
-        type: "json",
+      amplitude.incrementUserProps('export_count');
+      amplitude.track('export to builder', {
+        type: 'json',
       });
     }
   }
@@ -668,7 +670,7 @@ class App extends SafeComponent {
   @observable initialized = false;
 
   componentDidMount() {
-    window.addEventListener("message", (e) => {
+    window.addEventListener('message', (e) => {
       const { data: rawData } = e as MessageEvent;
 
       this.initialized = true;
@@ -677,30 +679,30 @@ class App extends SafeComponent {
       if (!data) {
         return;
       }
-      if (data.type === "selectionChange") {
+      if (data.type === 'selectionChange') {
         this.selection = data.elements;
       }
-      if (data.type === "selectionWithImages") {
+      if (data.type === 'selectionWithImages') {
         this.selectionWithImages = data.elements;
       }
-      if (data.type === "canGetCode") {
+      if (data.type === 'canGetCode') {
         this.isValidImport = data.value;
       }
-      if (data.type === "doneLoading") {
+      if (data.type === 'doneLoading') {
         this.loading = false;
       }
-      if (data.type === "storage") {
+      if (data.type === 'storage') {
         this.clientStorage = data.data;
       }
     });
 
     this.loadingCmsData = true;
     fetch(
-      "https://cdn.builder.io/api/v3/content/figma-modal-items?apiKey=YJIGb4i01jvw0SRdL5Bt"
+      'https://cdn.builder.io/api/v3/content/figma-modal-items?apiKey=YJIGb4i01jvw0SRdL5Bt'
     )
       .then((response) => {
         if (!response.ok) {
-          console.error("Cannot fetch figma checklist", response);
+          console.error('Cannot fetch figma checklist', response);
           return;
         }
         return response.json();
@@ -710,7 +712,7 @@ class App extends SafeComponent {
         if (data?.results) {
           this.loaderContent = this.loaderContent.concat(
             data.results.filter(
-              (item: CheckListContent) => item.data.type === "during"
+              (item: CheckListContent) => item.data.type === 'during'
             )
           );
           this.loaderContent = this.loaderContent.slice().reverse();
@@ -721,35 +723,35 @@ class App extends SafeComponent {
     parent.postMessage(
       {
         pluginMessage: {
-          type: "getStorage",
+          type: 'getStorage',
         },
       },
-      "*"
+      '*'
     );
     parent.postMessage(
       {
         pluginMessage: {
-          type: "init",
+          type: 'init',
         },
       },
-      "*"
+      '*'
     );
 
     // TODO: destroy on component unmount
     this.safeReaction(
       () => this.urlValue,
-      () => (this.errorMessage = "")
+      () => (this.errorMessage = '')
     );
     this.selectAllUrlInputText();
 
-    this.safeListenToEvent(window, "offline", () => (this.online = false));
-    this.safeListenToEvent(window, "keydown", (e) => {
+    this.safeListenToEvent(window, 'offline', () => (this.online = false));
+    this.safeListenToEvent(window, 'keydown', (e) => {
       this.updateKeyPositions(e as KeyboardEvent);
     });
-    this.safeListenToEvent(window, "keyup", (e) => {
+    this.safeListenToEvent(window, 'keyup', (e) => {
       this.updateKeyPositions(e as KeyboardEvent);
     });
-    this.safeListenToEvent(window, "online", () => (this.online = true));
+    this.safeListenToEvent(window, 'online', () => (this.online = true));
 
     this.safeReaction(
       () => this.clientStorage && fastClone(this.clientStorage),
@@ -767,7 +769,7 @@ class App extends SafeComponent {
       (userId) => {
         if (userId) {
           amplitude.setUserId(userId);
-          amplitude.track("figma plugin started");
+          amplitude.track('figma plugin started');
         }
       }
     );
@@ -778,11 +780,11 @@ class App extends SafeComponent {
       parent.postMessage(
         {
           pluginMessage: {
-            type: "updateElements",
+            type: 'updateElements',
             elements: fastClone(this.selection),
           },
         },
-        "*"
+        '*'
       );
     }
   };
@@ -793,7 +795,7 @@ class App extends SafeComponent {
     }
     if (!this.validate()) {
       if (!this.urlValid) {
-        this.errorMessage = "Please enter a valid URL";
+        this.errorMessage = 'Please enter a valid URL';
         return;
       }
     }
@@ -812,14 +814,14 @@ class App extends SafeComponent {
       )
         .then((res) => {
           if (!res.ok) {
-            console.error("Url-to-figma failed", res);
-            amplitude.track("import error");
-            throw new Error("Url-to-figma failed");
+            console.error('Url-to-figma failed', res);
+            amplitude.track('import error');
+            throw new Error('Url-to-figma failed');
           }
-          amplitude.incrementUserProps("import_count");
-          amplitude.track("import to figma", {
+          amplitude.incrementUserProps('import_count');
+          amplitude.track('import to figma', {
             url: this.urlValue,
-            type: "url",
+            type: 'url',
           });
           return res.json();
         })
@@ -831,7 +833,7 @@ class App extends SafeComponent {
                 await traverseLayers(rootLayer, (layer: any) => {
                   if (getImageFills(layer)) {
                     return processImages(layer).catch((err) => {
-                      console.warn("Could not process image", err);
+                      console.warn('Could not process image', err);
                     });
                   }
                 });
@@ -841,8 +843,8 @@ class App extends SafeComponent {
         })
         .then((data) => {
           parent.postMessage(
-            { pluginMessage: { type: "import", data: data[0] } },
-            "*"
+            { pluginMessage: { type: 'import', data: data[0] } },
+            '*'
           );
         })
         .catch((err) => {
@@ -854,7 +856,7 @@ class App extends SafeComponent {
   };
 
   onCancel = () => {
-    parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
+    parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
   };
 
   validate() {
@@ -872,7 +874,7 @@ class App extends SafeComponent {
   }
 
   getLang() {
-    return this.currentLanguage === "en" ? en : ru;
+    return this.currentLanguage === 'en' ? en : ru;
   }
 
   switchTab = (event: any, newValue: number) => {
@@ -882,35 +884,35 @@ class App extends SafeComponent {
   render() {
     return (
       <IntlProvider
-        messages={this.currentLanguage === "en" ? en : ru}
+        messages={this.currentLanguage === 'en' ? en : ru}
         locale={this.currentLanguage}
-        defaultLocale="en"
+        defaultLocale='en'
       >
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            overflow: "auto",
-            alignItems: "stretch",
-            height: "100%",
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'auto',
+            alignItems: 'stretch',
+            height: '100%',
           }}
         >
           <Tabs
-            variant="fullWidth"
+            variant='fullWidth'
             style={{
               minHeight: 40,
-              backgroundColor: "#F9F9F9",
+              backgroundColor: '#F9F9F9',
               flexShrink: 0,
               width: settings.ui.baseWidth,
-              borderRight: "1px solid #ccc",
+              borderRight: '1px solid #ccc',
             }}
             TabIndicatorProps={{
-              style: { transition: "none" },
+              style: { transition: 'none' },
             }}
             value={this.tabIndex}
             onChange={this.switchTab}
-            indicatorColor="primary"
-            textColor="primary"
+            indicatorColor='primary'
+            textColor='primary'
           >
             <Tab
               style={{
@@ -921,8 +923,8 @@ class App extends SafeComponent {
                 <span
                   style={{
                     fontSize: 12,
-                    fontWeight: "bold",
-                    textTransform: "none",
+                    fontWeight: 'bold',
+                    textTransform: 'none',
                   }}
                 >
                   Export to Code
@@ -938,8 +940,8 @@ class App extends SafeComponent {
                 <span
                   style={{
                     fontSize: 12,
-                    fontWeight: "bold",
-                    textTransform: "none",
+                    fontWeight: 'bold',
+                    textTransform: 'none',
                   }}
                 >
                   Generate with AI
@@ -955,8 +957,8 @@ class App extends SafeComponent {
                 <span
                   style={{
                     fontSize: 12,
-                    fontWeight: "bold",
-                    textTransform: "none",
+                    fontWeight: 'bold',
+                    textTransform: 'none',
                   }}
                 >
                   Import from web
@@ -967,8 +969,8 @@ class App extends SafeComponent {
           <Divider style={{ width: settings.ui.baseWidth }} />
           <TabPanel
             style={{
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
             }}
             value={this.tabIndex}
             index={0}
@@ -981,33 +983,33 @@ class App extends SafeComponent {
               >
                 <div
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                   }}
                 >
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      fontWeight: "bold",
+                      display: 'flex',
+                      alignItems: 'center',
+                      fontWeight: 'bold',
                     }}
                   >
                     <FormattedMessage
-                      id="title"
-                      defaultMessage="Turn your design into code "
+                      id='title'
+                      defaultMessage='Turn your design into code '
                     />
-                    <Tooltip title="Learn how to use this feature">
+                    <Tooltip title='Learn how to use this feature'>
                       <a
                         style={{
                           color: themeVars.colors.primary,
                           marginLeft: 5,
-                          fontWeight: "bold",
-                          position: "relative",
+                          fontWeight: 'bold',
+                          position: 'relative',
                         }}
-                        href="https://www.builder.io/c/docs/import-from-figma"
-                        target="_blank"
-                        rel="noopenner"
+                        href='https://www.builder.io/c/docs/import-from-figma'
+                        target='_blank'
+                        rel='noopenner'
                       >
                         <HelpOutline style={{ fontSize: 18 }} />
                       </a>
@@ -1016,33 +1018,33 @@ class App extends SafeComponent {
                 </div>
                 <div
                   style={{
-                    margin: "10 0 10",
+                    margin: '10 0 10',
                     fontSize: 12,
                     opacity: 0.8,
                   }}
                 >
                   <FormattedMessage
-                    id="description"
-                    defaultMessage="Convert your Figma designs into responsive code"
+                    id='description'
+                    defaultMessage='Convert your Figma designs into responsive code'
                   />
                 </div>
 
                 {this.generatingCode ? (
                   <>
-                    {" "}
+                    {' '}
                     <Box
                       style={{
                         padding: 5,
-                        backgroundColor: "#F9F9F9",
+                        backgroundColor: '#F9F9F9',
                         borderRadius: 4,
-                        border: "1px solid #D3D3D3",
+                        border: '1px solid #D3D3D3',
                         marginTop: 10,
                       }}
                     >
                       <p style={{ margin: 2, fontSize: 12, opacity: 0.8 }}>
-                        <span style={{ fontWeight: "bold" }}>
+                        <span style={{ fontWeight: 'bold' }}>
                           Note: this plugin is not magic.
-                        </span>{" "}
+                        </span>{' '}
                         We attempt to import your design as best possible. You
                         may need to make final adjustments after import,
                         including layout, responsiveness and styling.
@@ -1057,26 +1059,26 @@ class App extends SafeComponent {
                       <div>
                         <div
                           style={{
-                            fontWeight: "bold",
+                            fontWeight: 'bold',
                             fontSize: 12,
                             marginTop: 15,
                           }}
                         >
                           <FormattedMessage
-                            id="contentListBeforeImport"
-                            defaultMessage="Prep your Figma file for export"
+                            id='contentListBeforeImport'
+                            defaultMessage='Prep your Figma file for export'
                           />
                         </div>
                         <ul style={{ paddingLeft: 20, margin: 0 }}>
                           {this.figmaCheckList.results?.map((item) => {
-                            if (item.data.type === "before") {
+                            if (item.data.type === 'before') {
                               return (
                                 <li key={item.id}>
                                   <p
-                                    className="rich-text"
+                                    className='rich-text'
                                     style={{
-                                      marginTop: "auto",
-                                      marginBottom: "auto",
+                                      marginTop: 'auto',
+                                      marginBottom: 'auto',
                                       fontSize: 11,
                                       opacity: 0.8,
                                     }}
@@ -1091,26 +1093,26 @@ class App extends SafeComponent {
                         </ul>
                         <div
                           style={{
-                            fontWeight: "bold",
+                            fontWeight: 'bold',
                             marginTop: 15,
                             fontSize: 12,
                           }}
                         >
                           <FormattedMessage
-                            id="contentListAfterImport"
-                            defaultMessage="What you will need to do after import"
+                            id='contentListAfterImport'
+                            defaultMessage='What you will need to do after import'
                           />
                         </div>
                         <ul style={{ paddingLeft: 20, margin: 0 }}>
                           {this.figmaCheckList.results?.map((item) => {
-                            if (item.data.type === "after") {
+                            if (item.data.type === 'after') {
                               return (
                                 <li key={item.id}>
                                   <p
-                                    className="rich-text"
+                                    className='rich-text'
                                     style={{
-                                      marginTop: "auto",
-                                      marginBottom: "auto",
+                                      marginTop: 'auto',
+                                      marginBottom: 'auto',
                                       fontSize: 11,
                                       opacity: 0.8,
                                     }}
@@ -1125,10 +1127,10 @@ class App extends SafeComponent {
                         </ul>
                       </div>
                     ) : (
-                      <div style={{ display: "flex" }}>
+                      <div style={{ display: 'flex' }}>
                         <CircularProgress
                           disableShrink
-                          style={{ margin: "10 auto" }}
+                          style={{ margin: '10 auto' }}
                         />
                       </div>
                     )}
@@ -1137,89 +1139,89 @@ class App extends SafeComponent {
                       <div>
                         <div
                           style={{
-                            color: "rgba(255, 20, 20, 1)",
+                            color: 'rgba(255, 20, 20, 1)',
                             border: `1px solid rgba(255, 0, 0, 0.2)`,
-                            padding: "10px 10px 4px 10px",
+                            padding: '10px 10px 4px 10px',
                             borderRadius: 5,
                             marginTop: 10,
-                            backgroundColor: "rgba(255, 0, 0, 0.1)",
-                            alignItems: "center",
-                            cursor: "pointer",
-                            textDecoration: "none",
+                            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            textDecoration: 'none',
                           }}
                         >
                           <FormattedMessage
-                            id="importLayerHelp"
-                            defaultMessage="To import a layer, that layer and all children must use "
+                            id='importLayerHelp'
+                            defaultMessage='To import a layer, that layer and all children must use '
                           />
                           <a
                             style={{
                               color: themeVars.colors.primary,
                             }}
-                            href="https://help.figma.com/hc/en-us/articles/360040451373-Create-dynamic-designs-with-Auto-layout"
-                            target="_blank"
-                            rel="noopenner"
+                            href='https://help.figma.com/hc/en-us/articles/360040451373-Create-dynamic-designs-with-Auto-layout'
+                            target='_blank'
+                            rel='noopenner'
                           >
                             <FormattedMessage
-                              id="autolayout"
-                              defaultMessage="autolayout"
+                              id='autolayout'
+                              defaultMessage='autolayout'
                             />
                           </a>
                           <FormattedMessage
-                            id="importLayerHelp2"
-                            defaultMessage=" and vectors should be "
+                            id='importLayerHelp2'
+                            defaultMessage=' and vectors should be '
                           />
                           <a
                             style={{
                               color: themeVars.colors.primary,
                             }}
-                            href="https://github.com/BuilderIO/figma-html/#auto-layout-vectors"
-                            target="_blank"
-                            rel="noopenner"
+                            href='https://github.com/BuilderIO/figma-html/#auto-layout-vectors'
+                            target='_blank'
+                            rel='noopenner'
                           >
                             <FormattedMessage
-                              id="rasterizeVectors"
-                              defaultMessage="rasterized"
+                              id='rasterizeVectors'
+                              defaultMessage='rasterized'
                             />
                           </a>
                           <div
                             style={{
-                              display: "flex",
-                              flexDirection: "row-reverse",
+                              display: 'flex',
+                              flexDirection: 'row-reverse',
                             }}
                           >
                             <Button
-                              size="small"
-                              style={{ textTransform: "none" }}
-                              href="https://www.builder.io/c/docs/import-from-figma"
-                              target="_blank"
-                              color="primary"
-                              rel="noopenner"
+                              size='small'
+                              style={{ textTransform: 'none' }}
+                              href='https://www.builder.io/c/docs/import-from-figma'
+                              target='_blank'
+                              color='primary'
+                              rel='noopenner'
                             >
                               <FormattedMessage
-                                id="learnMore"
-                                defaultMessage="Learn more"
+                                id='learnMore'
+                                defaultMessage='Learn more'
                               />
                             </Button>
                             <Button
-                              size="small"
-                              style={{ opacity: 0.5, textTransform: "none" }}
+                              size='small'
+                              style={{ opacity: 0.5, textTransform: 'none' }}
                               onClick={() => {
                                 parent.postMessage(
                                   {
                                     pluginMessage: {
-                                      type: "clearErrors",
+                                      type: 'clearErrors',
                                       data: true,
                                     },
                                   },
-                                  "*"
+                                  '*'
                                 );
                                 this.showImportInvalidError = false;
                               }}
                             >
                               <FormattedMessage
-                                id="clearErrors"
-                                defaultMessage="Clear errors"
+                                id='clearErrors'
+                                defaultMessage='Clear errors'
                               />
                             </Button>
                           </div>
@@ -1230,48 +1232,48 @@ class App extends SafeComponent {
                       <div>
                         <div
                           style={{
-                            color: "rgba(255, 20, 20, 1)",
+                            color: 'rgba(255, 20, 20, 1)',
                             border: `1px solid rgba(255, 0, 0, 0.2)`,
                             padding: 10,
                             borderRadius: 5,
-                            backgroundColor: "rgba(255, 0, 0, 0.1)",
-                            alignItems: "center",
-                            cursor: "pointer",
-                            textDecoration: "none",
+                            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            textDecoration: 'none',
                             marginTop: 10,
                           }}
                         >
                           <FormattedMessage
-                            id="errorMessage"
-                            defaultMessage="Oh no, there was an error! To troubleshoot, if you are
+                            id='errorMessage'
+                            defaultMessage='Oh no, there was an error! To troubleshoot, if you are
                             importing a whole page, try importing a smaller part of the
-                            page at a time, like one section or even one button"
+                            page at a time, like one section or even one button'
                           />
                         </div>
                         <div>
                           <Button
-                            style={{ textTransform: "none" }}
-                            size="small"
-                            color="primary"
-                            href="https://www.builder.io/c/docs/import-from-figma#troubleshooting"
-                            target="_blank"
-                            rel="noopenner"
+                            style={{ textTransform: 'none' }}
+                            size='small'
+                            color='primary'
+                            href='https://www.builder.io/c/docs/import-from-figma#troubleshooting'
+                            target='_blank'
+                            rel='noopenner'
                           >
                             <FormattedMessage
-                              id="learnMore"
-                              defaultMessage="Learn more"
+                              id='learnMore'
+                              defaultMessage='Learn more'
                             />
                           </Button>
                           <Button
-                            size="small"
-                            style={{ opacity: 0.5, textTransform: "none" }}
+                            size='small'
+                            style={{ opacity: 0.5, textTransform: 'none' }}
                             onClick={() => {
                               this.showRequestFailedError = false;
                             }}
                           >
                             <FormattedMessage
-                              id="clearErrors"
-                              defaultMessage="Clear errors"
+                              id='clearErrors'
+                              defaultMessage='Clear errors'
                             />
                           </Button>
                         </div>
@@ -1284,7 +1286,7 @@ class App extends SafeComponent {
                           marginTop: 20,
                           padding: 10,
                           borderRadius: 5,
-                          textAlign: "center",
+                          textAlign: 'center',
                           backgroundColor:
                             themeVars.colors.primaryWithOpacity(0.1),
                         }}
@@ -1297,25 +1299,25 @@ class App extends SafeComponent {
                         {this.showDevModeOption && (
                           <Tooltip
                             PopperProps={{
-                              modifiers: { flip: { behavior: ["top"] } },
+                              modifiers: { flip: { behavior: ['top'] } },
                             }}
                             enterDelay={300}
-                            placement="top"
+                            placement='top'
                             title={this.getLang().devMode}
                           >
                             <FormControlLabel
-                              value="Use Dev Mode"
+                              value='Use Dev Mode'
                               disabled={!this.selection.length}
                               style={{
                                 marginTop: 20,
-                                textTransform: "none",
-                                float: "right",
+                                textTransform: 'none',
+                                float: 'right',
                                 marginRight: 0,
                               }}
                               control={
                                 <Switch
-                                  size="small"
-                                  color="primary"
+                                  size='small'
+                                  color='primary'
                                   checked={this.inDevMode}
                                   onChange={(e) =>
                                     (this.inDevMode = e.target.checked)
@@ -1326,17 +1328,17 @@ class App extends SafeComponent {
                                 <span
                                   style={{
                                     fontSize: 12,
-                                    position: "relative",
-                                    fontWeight: "bold",
+                                    position: 'relative',
+                                    fontWeight: 'bold',
                                   }}
                                 >
                                   <FormattedMessage
-                                    id="devMode"
-                                    defaultMessage="Use Dev Mode"
+                                    id='devMode'
+                                    defaultMessage='Use Dev Mode'
                                   />
                                 </span>
                               }
-                              labelPlacement="start"
+                              labelPlacement='start'
                             />
                           </Tooltip>
                         )}
@@ -1347,7 +1349,7 @@ class App extends SafeComponent {
                           <div>
                             <Button
                               fullWidth
-                              variant="contained"
+                              variant='contained'
                               style={{
                                 marginTop: 10,
                               }}
@@ -1355,11 +1357,11 @@ class App extends SafeComponent {
                                 this.getCode(true);
                               }}
                               disabled={!this.selection.length}
-                              color="primary"
+                              color='primary'
                             >
                               <FormattedMessage
-                                id="getCode"
-                                defaultMessage="Get Code"
+                                id='getCode'
+                                defaultMessage='Get Code'
                               />
                             </Button>
                           </div>
@@ -1369,29 +1371,32 @@ class App extends SafeComponent {
                     {this.displayFiddleUrl && (
                       <div
                         style={{
-                          margin: "10px 0 5px 0",
-                          textTransform: "none",
-                          textAlign: "center",
+                          margin: '10px 0 5px 0',
+                          textTransform: 'none',
+                          textAlign: 'center',
                         }}
                       >
-                        <FormattedMessage id="done" defaultMessage="Done! " />
+                        <FormattedMessage
+                          id='done'
+                          defaultMessage='Done! '
+                        />
                         <a
                           style={{
                             color: themeVars.colors.primary,
-                            fontWeight: "bold",
-                            textDecoration: "none",
+                            fontWeight: 'bold',
+                            textDecoration: 'none',
                           }}
-                          rel="noopenner"
+                          rel='noopenner'
                           href={this.displayFiddleUrl}
-                          target="_blank"
+                          target='_blank'
                         >
                           <FormattedMessage
-                            id="clickHere"
-                            defaultMessage="Click here"
+                            id='clickHere'
+                            defaultMessage='Click here'
                           />
                         </a>
                         <FormattedMessage
-                          id="clickHere2"
+                          id='clickHere2'
                           defaultMessage=" to open your content in Builder.io and choose 'get code'"
                         />
                       </div>
@@ -1399,11 +1404,11 @@ class App extends SafeComponent {
                     {Boolean(this.selection.length) && (
                       <Button
                         fullWidth
-                        size="small"
+                        size='small'
                         style={{
                           marginTop: 5,
                           opacity: 0.5,
-                          textTransform: "none",
+                          textTransform: 'none',
                         }}
                         onClick={(e) => {
                           this.getCode(false);
@@ -1411,8 +1416,8 @@ class App extends SafeComponent {
                         disabled={!this.selection.length}
                       >
                         <FormattedMessage
-                          id="downloadJson"
-                          defaultMessage="Download JSON"
+                          id='downloadJson'
+                          defaultMessage='Download JSON'
                         />
                       </Button>
                     )}
@@ -1423,19 +1428,19 @@ class App extends SafeComponent {
               <div
                 style={{
                   color: themeVars.colors.primary,
-                  margin: "auto 15px 15px",
+                  margin: 'auto 15px 15px',
                   border: `1px solid ${themeVars.colors.primaryWithOpacity(
                     0.2
                   )}`,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   padding: 10,
                   borderRadius: 5,
                   backgroundColor: themeVars.colors.primaryWithOpacity(0.1),
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
                 }}
-                role="button"
+                role='button'
                 onClick={() => {
                   this.tabIndex = 1;
                 }}
@@ -1444,7 +1449,7 @@ class App extends SafeComponent {
                 New!
                 <span
                   style={{
-                    color: "inherit",
+                    color: 'inherit',
                     marginLeft: 3,
                   }}
                 >
@@ -1454,7 +1459,10 @@ class App extends SafeComponent {
             </>
           </TabPanel>
 
-          <TabPanel value={this.tabIndex} index={1}>
+          <TabPanel
+            value={this.tabIndex}
+            index={1}
+          >
             <AiImport
               clientStorage={this.clientStorage}
               updateClientStorage={(clientStorage) => {
@@ -1465,12 +1473,15 @@ class App extends SafeComponent {
           </TabPanel>
 
           {/* Import to Figma */}
-          <TabPanel value={this.tabIndex} index={2}>
+          <TabPanel
+            value={this.tabIndex}
+            index={2}
+          >
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                position: "relative",
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
                 zIndex: 3,
                 maxWidth: settings.ui.baseWidth,
                 fontWeight: 400,
@@ -1482,8 +1493,8 @@ class App extends SafeComponent {
                 ref={(ref) => (this.form = ref)}
                 // {...{ validate: 'true' }}
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
+                  display: 'flex',
+                  flexDirection: 'column',
                   marginBottom: -10,
                 }}
                 onSubmit={(e) => {
@@ -1493,40 +1504,40 @@ class App extends SafeComponent {
               >
                 <div
                   style={{
-                    margin: "15 10 10 10",
-                    fontWeight: "bold",
+                    margin: '15 10 10 10',
+                    fontWeight: 'bold',
                   }}
                 >
                   <FormattedMessage
-                    id="importDesigns"
-                    defaultMessage="Import designs from the web"
+                    id='importDesigns'
+                    defaultMessage='Import designs from the web'
                   />
                 </div>
 
                 <div
                   style={{
-                    margin: "-3px 10px 13px",
+                    margin: '-3px 10px 13px',
                     fontSize: 12,
                     opacity: 0.8,
                   }}
                 >
                   <FormattedMessage
-                    id="importDescription"
-                    defaultMessage="Convert website to figma design"
+                    id='importDescription'
+                    defaultMessage='Convert website to figma design'
                   />
                 </div>
 
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    margin: "0 10 10",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    margin: '0 10 10',
                   }}
                 >
                   <div
                     style={{
-                      display: "flex",
-                      position: "relative",
+                      display: 'flex',
+                      position: 'relative',
                       marginTop: 5,
                     }}
                   >
@@ -1539,13 +1550,13 @@ class App extends SafeComponent {
                       label={
                         <span
                           style={{
-                            fontWeight: "bold",
-                            color: "#000000",
+                            fontWeight: 'bold',
+                            color: '#000000',
                           }}
                         >
                           <FormattedMessage
-                            id="urlToImport"
-                            defaultMessage="Url to import"
+                            id='urlToImport'
+                            defaultMessage='Url to import'
                           />
                         </span>
                       }
@@ -1566,13 +1577,13 @@ class App extends SafeComponent {
                           }
                         }
                       }}
-                      placeholder="e.g. https://builder.io"
-                      type="url"
+                      placeholder='e.g. https://builder.io'
+                      type='url'
                       value={this.urlValue}
                       onChange={(e) => {
                         let value = e.target.value.trim();
                         if (!value.match(/^https?:\/\//)) {
-                          value = "http://" + value;
+                          value = 'http://' + value;
                         }
                         this.urlValue = value;
                       }}
@@ -1581,31 +1592,31 @@ class App extends SafeComponent {
                   {this.showMoreOptions && (
                     <div
                       style={{
-                        display: "flex",
-                        alignItems: "flex-end",
+                        display: 'flex',
+                        alignItems: 'flex-end',
                         marginTop: 15,
                       }}
                     >
-                      <div style={{ position: "relative", flexGrow: 1 }}>
+                      <div style={{ position: 'relative', flexGrow: 1 }}>
                         <TextField
                           label={
                             <span
                               style={{
-                                fontWeight: "bold",
-                                color: "#000000",
+                                fontWeight: 'bold',
+                                color: '#000000',
                               }}
                             >
                               <FormattedMessage
-                                id="width"
-                                defaultMessage="Width"
+                                id='width'
+                                defaultMessage='Width'
                               />
                             </span>
                           }
                           required
                           inputProps={{
-                            min: "200",
-                            max: "3000",
-                            step: "10",
+                            min: '200',
+                            max: '3000',
+                            step: '10',
                             style: {
                               fontSize: 13,
                             },
@@ -1628,9 +1639,9 @@ class App extends SafeComponent {
                               }
                             }
                           }}
-                          placeholder="1200"
+                          placeholder='1200'
                           fullWidth
-                          type="number"
+                          type='number'
                           value={this.width}
                           onChange={(e) => {
                             this.width = String(
@@ -1640,13 +1651,13 @@ class App extends SafeComponent {
                         />
                         <div
                           style={{
-                            position: "absolute",
+                            position: 'absolute',
                             right: -4,
                             top: 14,
                             borderRadius: 100,
-                            display: "flex",
+                            display: 'flex',
                             ...(this.loading && {
-                              pointerEvents: "none",
+                              pointerEvents: 'none',
                               opacity: 0.5,
                             }),
                           }}
@@ -1654,10 +1665,10 @@ class App extends SafeComponent {
                           <IconButton
                             style={{
                               padding: 5,
-                              background: "none",
-                              color: this.width === "1200" ? "#000" : "#888",
+                              background: 'none',
+                              color: this.width === '1200' ? '#000' : '#888',
                             }}
-                            onClick={() => (this.width = "1200")}
+                            onClick={() => (this.width = '1200')}
                           >
                             <DesktopIcon />
                           </IconButton>
@@ -1665,20 +1676,20 @@ class App extends SafeComponent {
                           <IconButton
                             style={{
                               padding: 5,
-                              background: "none",
-                              color: this.width === "900" ? "#000" : "#888",
+                              background: 'none',
+                              color: this.width === '900' ? '#000' : '#888',
                             }}
-                            onClick={() => (this.width = "900")}
+                            onClick={() => (this.width = '900')}
                           >
                             <TabletIcon />
                           </IconButton>
                           <IconButton
                             style={{
                               padding: 5,
-                              background: "none",
-                              color: this.width === "400" ? "#000" : "#888",
+                              background: 'none',
+                              color: this.width === '400' ? '#000' : '#888',
                             }}
-                            onClick={() => (this.width = "400")}
+                            onClick={() => (this.width = '400')}
                           >
                             <MobileIcon />
                           </IconButton>
@@ -1687,20 +1698,20 @@ class App extends SafeComponent {
 
                       <Tooltip
                         PopperProps={{
-                          modifiers: { flip: { behavior: ["top"] } },
+                          modifiers: { flip: { behavior: ['top'] } },
                         }}
                         enterDelay={300}
-                        placement="top"
+                        placement='top'
                         title={this.getLang().framesPop}
                       >
                         <FormControlLabel
-                          value="Use Frames"
+                          value='Use Frames'
                           disabled={this.loading}
                           style={{ marginLeft: 20 }}
                           control={
                             <Switch
-                              size="small"
-                              color="primary"
+                              size='small'
+                              color='primary'
                               checked={this.useFrames}
                               onChange={(e) =>
                                 (this.useFrames = e.target.checked)
@@ -1711,18 +1722,18 @@ class App extends SafeComponent {
                             <span
                               style={{
                                 fontSize: 12,
-                                position: "relative",
-                                fontWeight: "bold",
+                                position: 'relative',
+                                fontWeight: 'bold',
                                 top: -5,
                               }}
                             >
                               <FormattedMessage
-                                id="frames"
-                                defaultMessage="Frames"
+                                id='frames'
+                                defaultMessage='Frames'
                               />
                             </span>
                           }
-                          labelPlacement="top"
+                          labelPlacement='top'
                         />
                       </Tooltip>
                     </div>
@@ -1731,11 +1742,11 @@ class App extends SafeComponent {
                 {this.errorMessage && (
                   <div
                     style={{
-                      color: "#721c24",
-                      backgroundColor: "#f8d7da",
-                      border: "1px solid #f5c6cb",
+                      color: '#721c24',
+                      backgroundColor: '#f8d7da',
+                      border: '1px solid #f5c6cb',
                       borderRadius: 4,
-                      padding: ".75rem 1.25rem",
+                      padding: '.75rem 1.25rem',
                       marginTop: 20,
                     }}
                   >
@@ -1745,17 +1756,17 @@ class App extends SafeComponent {
                 {!this.online && (
                   <div
                     style={{
-                      color: "#721c24",
-                      backgroundColor: "#f8d7da",
-                      border: "1px solid #f5c6cb",
+                      color: '#721c24',
+                      backgroundColor: '#f8d7da',
+                      border: '1px solid #f5c6cb',
                       borderRadius: 4,
-                      padding: ".75rem 1.25rem",
+                      padding: '.75rem 1.25rem',
                       marginTop: 20,
                     }}
                   >
                     <FormattedMessage
-                      id="needOnline"
-                      defaultMessage="You need to be online to use this plugin"
+                      id='needOnline'
+                      defaultMessage='You need to be online to use this plugin'
                     />
                   </div>
                 )}
@@ -1764,16 +1775,16 @@ class App extends SafeComponent {
                     <Box
                       style={{
                         padding: 5,
-                        backgroundColor: "#F9F9F9",
+                        backgroundColor: '#F9F9F9',
                         borderRadius: 4,
-                        border: "1px solid #D3D3D3",
+                        border: '1px solid #D3D3D3',
                         marginBottom: 10,
                       }}
                     >
                       <p style={{ margin: 2, fontSize: 12, opacity: 0.8 }}>
-                        <span style={{ fontWeight: "bold" }}>
+                        <span style={{ fontWeight: 'bold' }}>
                           Note: this plugin is not magic.
-                        </span>{" "}
+                        </span>{' '}
                         For best results, you may need to do some cleanup
                         afterwards to make it production-ready.
                       </p>
@@ -1783,46 +1794,49 @@ class App extends SafeComponent {
                   </div>
                 ) : (
                   <>
-                    <div style={{ margin: "0 10 10" }}>
+                    <div style={{ margin: '0 10 10' }}>
                       <Button
-                        type="submit"
+                        type='submit'
                         disabled={Boolean(
                           this.errorMessage || this.loading || !this.online
                         )}
                         style={{
                           marginTop: 10,
                           marginBottom: 15,
-                          textTransform: "none",
+                          textTransform: 'none',
                         }}
                         fullWidth
-                        color="primary"
-                        variant="contained"
+                        color='primary'
+                        variant='contained'
                         onClick={this.onCreate}
                       >
-                        <FormattedMessage id="import" defaultMessage="Import" />
+                        <FormattedMessage
+                          id='import'
+                          defaultMessage='Import'
+                        />
                       </Button>
                     </div>
 
                     <Divider
                       style={{
-                        margin: "0 -5",
+                        margin: '0 -5',
                         maxWidth: settings.ui.baseWidth,
                       }}
                     />
                     <div
                       style={{
                         padding: 15,
-                        margin: "5 -5 -5",
+                        margin: '5 -5 -5',
                       }}
                     >
                       <div
                         style={{
-                          fontWeight: "bold",
+                          fontWeight: 'bold',
                         }}
                       >
                         <FormattedMessage
-                          id="chromeExtension"
-                          defaultMessage="Chrome Extension"
+                          id='chromeExtension'
+                          defaultMessage='Chrome Extension'
                         />
                       </div>
                       <div
@@ -1832,7 +1846,7 @@ class App extends SafeComponent {
                       >
                         <p
                           style={{
-                            margin: "10 0",
+                            margin: '10 0',
                             opacity: 0.8,
                           }}
                         >
@@ -1841,35 +1855,35 @@ class App extends SafeComponent {
                           for you!
                         </p>
 
-                        <p style={{ margin: "5 0" }}>
-                          <span style={{ fontWeight: "bold" }}>Step 1: </span>
+                        <p style={{ margin: '5 0' }}>
+                          <span style={{ fontWeight: 'bold' }}>Step 1: </span>
                           Use our
                           <a
                             style={{
                               color: themeVars.colors.primary,
-                              cursor: "pointer",
-                              textDecoration: "none",
+                              cursor: 'pointer',
+                              textDecoration: 'none',
                             }}
-                            href="https://chrome.google.com/webstore/detail/efjcmgblfpkhbjpkpopkgeomfkokpaim"
-                            target="_blank"
+                            href='https://chrome.google.com/webstore/detail/efjcmgblfpkhbjpkpopkgeomfkokpaim'
+                            target='_blank'
                           >
                             <FormattedMessage
-                              id="chromeExtensionLink"
-                              defaultMessage="chrome extension"
+                              id='chromeExtensionLink'
+                              defaultMessage='chrome extension'
                             />
                           </a>
                         </p>
 
-                        <p style={{ margin: "5 0" }}>
-                          <span style={{ fontWeight: "bold" }}>Step 2: </span>
+                        <p style={{ margin: '5 0' }}>
+                          <span style={{ fontWeight: 'bold' }}>Step 2: </span>
                           Upload the figma.json file
                           <a
                             onClick={() => {
-                              const input = document.createElement("input");
+                              const input = document.createElement('input');
 
-                              input.type = "file";
+                              input.type = 'file';
                               document.body.appendChild(input);
-                              input.style.visibility = "hidden";
+                              input.style.visibility = 'hidden';
                               input.click();
 
                               const onFocus = () => {
@@ -1886,13 +1900,13 @@ class App extends SafeComponent {
                               const done = () => {
                                 input.remove();
                                 this.loading = false;
-                                window.removeEventListener("focus", onFocus);
+                                window.removeEventListener('focus', onFocus);
                               };
 
-                              window.addEventListener("focus", onFocus);
+                              window.addEventListener('focus', onFocus);
 
                               // TODO: parse and upload images!
-                              input.addEventListener("change", (event) => {
+                              input.addEventListener('change', (event) => {
                                 const file = (event.target as HTMLInputElement)
                                   .files![0];
                                 if (file) {
@@ -1915,7 +1929,7 @@ class App extends SafeComponent {
                                                     layer
                                                   ).catch((err) => {
                                                     console.warn(
-                                                      "Could not process image",
+                                                      'Could not process image',
                                                       err
                                                     );
                                                   });
@@ -1929,17 +1943,17 @@ class App extends SafeComponent {
                                           parent.postMessage(
                                             {
                                               pluginMessage: {
-                                                type: "import",
+                                                type: 'import',
                                                 data: json,
                                               },
                                             },
-                                            "*"
+                                            '*'
                                           );
                                           amplitude.incrementUserProps(
-                                            "import_count"
+                                            'import_count'
                                           );
-                                          amplitude.track("import to figma", {
-                                            type: "chrome-extension",
+                                          amplitude.track('import to figma', {
+                                            type: 'chrome-extension',
                                           });
 
                                           setTimeout(() => {
@@ -1952,7 +1966,7 @@ class App extends SafeComponent {
                                           alert(err);
                                         });
                                     } catch (err) {
-                                      alert("File read error: " + err);
+                                      alert('File read error: ' + err);
                                       done();
                                     }
                                   };
@@ -1965,12 +1979,12 @@ class App extends SafeComponent {
                             }}
                             style={{
                               color: themeVars.colors.primary,
-                              cursor: "pointer",
+                              cursor: 'pointer',
                             }}
                           >
                             <FormattedMessage
-                              id="uploadLink"
-                              defaultMessage=" upload here "
+                              id='uploadLink'
+                              defaultMessage=' upload here '
                             />
                           </a>
                         </p>
@@ -1982,14 +1996,14 @@ class App extends SafeComponent {
             </div>
           </TabPanel>
 
-          <div
+          {/* <div
             style={{
-              display: "flex",
-              flexDirection: "column",
-              backgroundColor: "#F9F9F9",
+              display: 'flex',
+              flexDirection: 'column',
+              backgroundColor: '#F9F9F9',
               width: settings.ui.baseWidth,
-              borderRight: "1px solid #ccc",
-              marginTop: "auto",
+              borderRight: '1px solid #ccc',
+              marginTop: 'auto',
             }}
           >
             <Divider />
@@ -1997,59 +2011,59 @@ class App extends SafeComponent {
             {useDev && (
               <div
                 style={{
-                  color: "rgba(255, 40, 40, 1)",
-                  backgroundColor: "rgba(255, 0, 0, 0.1)",
+                  color: 'rgba(255, 40, 40, 1)',
+                  backgroundColor: 'rgba(255, 0, 0, 0.1)',
                   padding: 10,
                   borderRadius: 5,
-                  whiteSpace: "pre-wrap",
-                  margin: "10px 10px 0 10px",
-                  textAlign: "center",
+                  whiteSpace: 'pre-wrap',
+                  margin: '10px 10px 0 10px',
+                  textAlign: 'center',
                 }}
               >
                 Using dev env. If you see this and you are not a developer,
-                please{" "}
+                please{' '}
                 <a
-                  style={{ color: "inherit" }}
-                  href="https://github.com/BuilderIO/html-to-figma/issues"
-                  target="_blank"
+                  style={{ color: 'inherit' }}
+                  href='https://github.com/BuilderIO/html-to-figma/issues'
+                  target='_blank'
                 >
                   report it
                 </a>
               </div>
             )}
             <a
-              style={{ display: "flex" }}
-              href="https://www.builder.io?utm_source=figma"
-              target="_blank"
+              style={{ display: 'flex' }}
+              href='https://www.builder.io?utm_source=figma'
+              target='_blank'
             >
               <img
                 width={170}
                 height={56}
                 style={{
-                  margin: "20px auto 10px",
+                  margin: '20px auto 10px',
                 }}
-                src="https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2F2dee283279f244c1a731330a3aa96166"
+                src='https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2F2dee283279f244c1a731330a3aa96166'
               />
             </a>
             <p
               style={{
                 fontSize: 12,
-                textAlign: "center",
-                margin: "5px auto 10px",
+                textAlign: 'center',
+                margin: '5px auto 10px',
                 maxWidth: 240,
               }}
             >
               <a
                 style={{
                   color: themeVars.colors.primary,
-                  cursor: "pointer",
-                  textDecoration: "none",
+                  cursor: 'pointer',
+                  textDecoration: 'none',
                 }}
-                href="https://www.builder.io?utm_source=figma"
-                target="_blank"
+                href='https://www.builder.io?utm_source=figma'
+                target='_blank'
               >
-                Builder.io{" "}
-              </a>{" "}
+                Builder.io{' '}
+              </a>{' '}
               <span style={{ opacity: 0.9 }}>
                 is a headless CMS that lets you drag & drop with your
                 <span onClick={() => this.handleDevModeClick()}>
@@ -2061,56 +2075,62 @@ class App extends SafeComponent {
 
             <div
               style={{
-                textAlign: "center",
-                display: "flex",
-                alignItems: "center",
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
                 fontWeight: 500,
                 fontSize: 12,
                 padding: 10,
                 gap: 10,
-                margin: "0 auto 5px",
+                margin: '0 auto 5px',
               }}
             >
               <a
                 style={{
-                  color: "#000000",
+                  color: '#000000',
                   opacity: 0.7,
-                  textDecoration: "none",
+                  textDecoration: 'none',
                 }}
-                href="https://github.com/BuilderIO/html-to-figma/issues"
-                target="_blank"
+                href='https://github.com/BuilderIO/html-to-figma/issues'
+                target='_blank'
               >
                 <FormattedMessage
-                  id="feedbackFooter"
-                  defaultMessage="Feedback"
+                  id='feedbackFooter'
+                  defaultMessage='Feedback'
                 />
               </a>
               <a
                 style={{
-                  color: "#000000",
+                  color: '#000000',
                   opacity: 0.7,
-                  textDecoration: "none",
+                  textDecoration: 'none',
                   marginLeft: 5,
                 }}
-                href="https://github.com/BuilderIO/html-to-figma"
-                target="_blank"
+                href='https://github.com/BuilderIO/html-to-figma'
+                target='_blank'
               >
-                <FormattedMessage id="source" defaultMessage="Source" />
+                <FormattedMessage
+                  id='source'
+                  defaultMessage='Source'
+                />
               </a>
               <a
                 style={{
-                  color: "#000000",
+                  color: '#000000',
                   opacity: 0.7,
-                  textDecoration: "none",
+                  textDecoration: 'none',
                   marginLeft: 5,
                 }}
-                href="https://github.com/BuilderIO/html-to-figma"
-                target="_blank"
+                href='https://github.com/BuilderIO/html-to-figma'
+                target='_blank'
               >
-                <FormattedMessage id="help" defaultMessage="Help" />
+                <FormattedMessage
+                  id='help'
+                  defaultMessage='Help'
+                />
               </a>
             </div>
-          </div>
+          </div> */}
         </div>
       </IntlProvider>
     );
@@ -2130,5 +2150,5 @@ ReactDOM.render(
       <App />
     </>
   </MuiThemeProvider>,
-  document.getElementById("react-page")
+  document.getElementById('react-page')
 );
