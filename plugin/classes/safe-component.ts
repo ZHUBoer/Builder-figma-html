@@ -1,5 +1,5 @@
-import * as React from "react";
-import { reaction, IReactionOptions, action } from "mobx";
+import * as React from 'react';
+import { reaction, IReactionOptions, action } from 'mobx';
 
 type VoidFunction = () => void;
 

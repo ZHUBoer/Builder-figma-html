@@ -64,7 +64,8 @@ amplitude.initialize();
 const selectionToBuilder = async (
   selection: SceneNode[]
 ): Promise<BuilderElement[]> => {
-  const useGzip = true;
+  // const useGzip = true;
+  const useGzip = false; // TODO:调试的时候取消使用gzip压缩，看一下数据结构
 
   selection = deepClone(selection);
 

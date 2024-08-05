@@ -115,8 +115,8 @@ const allPropertyNames = [
   'absoluteRenderBounds',
 ];
 
-// The Figma nodes are hard to inspect at a glance because almost all properties are non enumerable
-// getters. This removes that wrapping for easier inspecting
+// The Figma nodes are hard to inspect at a glance because almost all properties are non enumerable getters.
+// This removes that wrapping for easier inspecting
 const cloneObject = (obj: any, valuesSet = new Set()) => {
   if (!obj || typeof obj !== 'object') {
     return obj;
